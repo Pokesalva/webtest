@@ -1,119 +1,121 @@
-# Woodcraft Site (plantilla)
+# Taller Roble — sitio estático (HTML + CSS + JS puro)
 
-Sitio estático **multi-página** hecho con Vite + React: cada página es un
-`.html` real e independiente (se recarga al navegar entre ellas, como un
-sitio clásico), organizado por secciones/componentes reutilizables.
-Todos los botones que normalmente dispararían pagos o formularios (agregar al
-carro, cotizar, escribirme) son placeholders con un `alert()` — reemplázalos
-cuando tengas backend, mailto, WhatsApp, Formspree, Stripe, etc.
-
-## Páginas
-
-| Página          | Archivo         | Entry JS               |
-|-----------------|-----------------|-------------------------|
-| Inicio          | `index.html`    | `src/main-home.jsx`     |
-| Tienda          | `tienda.html`   | `src/main-tienda.jsx`   |
-| Sobre mí        | `sobre-mi.html` | `src/main-sobre-mi.jsx` |
+Sin frameworks, sin build, sin `node_modules`, sin `.env`, sin nada oculto.
+Todo lo que ves en este repo es exactamente lo que se sube al navegador.
+Es 100% seguro subirlo público a GitHub Pages tal cual está.
 
 ## Estructura
 
 ```
-index.html
-tienda.html
-sobre-mi.html
-src/
-  data/content.js     <- TODO tu texto y links vive acá
-  components/
-    Header.jsx
-    Hero.jsx
-    Intro.jsx
-    ShopPreview.jsx
-    AboutMe.jsx
-    Socials.jsx
-    Footer.jsx
-  pages/
-    HomePage.jsx       <- arma Hero + Intro
-    ShopPage.jsx        <- arma ShopPreview
-    AboutPage.jsx       <- arma AboutMe + Socials
-  main-home.jsx         <- monta HomePage en index.html
-  main-tienda.jsx       <- monta ShopPage en tienda.html
-  main-sobre-mi.jsx     <- monta AboutPage en sobre-mi.html
-  index.css             <- paleta, tipografía, todos los estilos
+index.html          <- página de inicio (¡ábrela con un servidor, ver abajo!)
+tienda.html         <- página de tienda
+sobre-mi.html        <- página sobre mí
+css/
+  styles.css         <- todos los estilos del sitio
+js/
+  content.js         <- TODO el texto, precios y links vive acá (público)
+  render.js           <- funciones que arman el HTML de cada sección
+  page-home.js         <- combina header + hero + intro para index.html
+  page-tienda.js        <- combina header + grid de tienda para tienda.html
+  page-sobre-mi.js       <- combina header + about + socials para sobre-mi.html
 ```
+
+### Cómo está modularizado (sin librerías)
+
+- `js/content.js` exporta los datos (nombre del sitio, textos, precios, links).
+- `js/render.js` exporta una función por sección (`renderHeader`,
+  `renderHero`, `renderShopGrid`, etc.) que devuelve un string de HTML.
+- Cada página tiene su propio script (`page-home.js`, `page-tienda.js`,
+  `page-sobre-mi.js`) que importa lo que necesita de esos dos módulos y
+  rellena los contenedores `#header`, `#main`, `#footer` de su `.html`.
+
+Esto es "módulos JS nativos" (`import`/`export` de ES Modules) — no hay
+build, ni bundler, ni dependencias. El navegador entiende `type="module"`
+directamente.
+
+### Editar contenido
+
+Todo el texto, precios y links de redes sociales se edita en un solo lugar:
+`js/content.js`. No necesitas tocar el HTML ni el `render.js` para cambiar
+textos.
 
 ### Agregar una página nueva
 
-1. Crea `mi-pagina.html` en la raíz (copia el patrón de `tienda.html`).
-2. Crea `src/main-mi-pagina.jsx` que monte un componente de página.
-3. Crea `src/pages/MiPagina.jsx` combinando los componentes que necesites.
-4. Agrégala en `vite.config.js`, dentro de `build.rollupOptions.input`.
-5. Agrégala al array `nav` en `src/data/content.js` si quieres que salga en el menú.
+1. Copia `tienda.html` como plantilla y cámbiale el `<title>` y el
+   `<script type="module" src="js/page-tienda.js">` por tu propio archivo.
+2. Crea `js/page-mi-pagina.js` (copia el patrón de los otros `page-*.js`).
+3. Si quieres una sección nueva (no reciclada), agrega una función
+   `renderMiSeccion(...)` en `js/render.js`.
+4. Agrega el link en el array `nav` de `js/content.js` para que salga en
+   el menú de todas las páginas.
 
-### Sobre los links
+### Poner tus imágenes
 
-Todos los `href` entre páginas son **relativos** (`tienda.html`, no
-`/tienda.html`). Esto es a propósito: como el sitio se publica bajo un
-subpath en GitHub Pages (`base: "/tu-repo/"`), un link absoluto se rompería.
-Si mueves páginas a subcarpetas, ajusta los links en consecuencia.
+Los bloques `[ tu foto acá ]` son placeholders de texto dentro de
+`js/render.js`. Para usar una imagen real:
 
-### Navegar entre páginas en desarrollo
+1. Crea una carpeta `img/` y pon ahí tus fotos (ej: `img/hero.jpg`).
+2. En `render.js`, cambia el `<div class="intro__image">...</div>` (o el
+   que corresponda) por `<img src="img/hero.jpg" alt="..." />`.
 
-Con `npm run dev` corriendo, entra directo a:
-- `http://localhost:5173/` (Inicio)
-- `http://localhost:5173/tienda.html`
-- `http://localhost:5173/sobre-mi.html`
+### Botones placeholder
 
-O simplemente haz clic en el menú del header — funciona igual en dev y en producción.
+"Agregar al carro", "Cotizar un proyecto" y "Escríbeme" solo muestran una
+alerta por ahora (ver `bindPlaceholderActions` en `render.js`). Reemplaza esa
+función cuando conectes un mailto, WhatsApp, Formspree, Stripe, etc.
 
-Para editar textos, precios o links de redes sociales, solo toca
-`src/data/content.js`. Para cambiar colores/fuentes, toca las variables
-`:root` al inicio de `src/index.css`.
+## Ver el sitio en tu computador
 
-## Desarrollo local
+**Importante:** como usamos `import`/`export` (ES Modules) y no hay build,
+los navegadores bloquean estos módulos si abres el `.html` directo con doble
+clic (protocolo `file://`). Necesitas levantar un servidor local simple —
+no requiere instalar nada con `npm`:
 
+**Opción A — Python (viene instalado en Mac/Linux, y en Windows si
+instalaste Python):**
 ```bash
-npm install
-npm run dev
+cd woodcraft-static
+python3 -m http.server 8000
+```
+Abre `http://localhost:8000/` en el navegador.
+
+**Opción B — Node, sin instalar nada permanente:**
+```bash
+cd woodcraft-static
+npx serve
 ```
 
-Abre lo que te indique la terminal (usualmente http://localhost:5173).
-
-## Poner tus imágenes
-
-Las cajas con `[ tu foto acá ]` son placeholders. Para usar tus fotos:
-
-1. Ponlas en `public/` (ej: `public/hero.jpg`).
-2. En el componente correspondiente, reemplaza el `<div className="...">[ texto ]</div>`
-   por `<img src="/hero.jpg" alt="..." />`.
+**Opción C — VS Code:**
+Instala la extensión "Live Server" y haz clic derecho en `index.html` →
+"Open with Live Server".
 
 ## Publicar en GitHub Pages
 
-### Opción A — con el paquete `gh-pages` (incluido en package.json)
-
-1. Crea el repo en GitHub y súbelo:
+1. Crea el repo y sube el contenido de esta carpeta a la rama `main`:
    ```bash
    git init
    git add .
-   git commit -m "primer commit"
+   git commit -m "sitio estático"
    git branch -M main
    git remote add origin https://github.com/TU_USUARIO/TU_REPO.git
    git push -u origin main
    ```
-2. En `vite.config.js`, cambia `base: "/mi-repo/"` por
-   `base: "/TU_REPO/"` (el nombre exacto del repositorio).
-3. Publica:
-   ```bash
-   npm run deploy
-   ```
-   Esto compila el sitio y lo sube a una rama `gh-pages`.
-4. En GitHub → Settings → Pages, elige la rama `gh-pages` como fuente.
-5. Tu sitio quedará en `https://TU_USUARIO.github.io/TU_REPO/`.
+2. En GitHub → **Settings → Pages**, en "Source" elige la rama `main` y
+   la carpeta `/ (root)`.
+3. En un par de minutos tu sitio queda en:
+   `https://TU_USUARIO.github.io/TU_REPO/`
 
-### Opción B — con GitHub Actions (sin comandos manuales cada vez)
+No hay paso de build: GitHub Pages sirve estos archivos tal cual. Como los
+links entre páginas (`index.html`, `tienda.html`, etc.) son relativos, van
+a funcionar sin importar si el repo queda en la raíz de tu usuario o en un
+subpath (`/TU_REPO/`).
 
-Si prefieres que se publique solo con cada `git push`, avísame y te dejo el
-archivo `.github/workflows/deploy.yml` correspondiente.
+## Nada sensible, por diseño
 
-### Si vas a usar `usuario.github.io` como repo (dominio raíz)
-
-En ese caso, en `vite.config.js` deja `base: "/"` en vez de `/TU_REPO/`.
+- No hay `.env`, ni claves de API, ni tokens en ningún archivo.
+- `js/content.js` está pensado para ser 100% público — es literalmente el
+  texto de tu página, nada más.
+- Los botones de pago/formulario son solo `alert()` hasta que decidas a qué
+  servicio conectarlos (y ese servicio nunca debería requerir que guardes
+  una clave secreta en este repo estático — para eso existen servicios como
+  Stripe Checkout links, Formspree, o un backend aparte).
