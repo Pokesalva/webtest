@@ -118,7 +118,7 @@ export function renderSocials(socials) {
   `;
 }
 
-export function renderFooter(site, about) {
+export function renderFooter(site, about, socials) {
   return `
     <footer class="footer">
       <div class="container footer__inner">
@@ -128,7 +128,7 @@ export function renderFooter(site, about) {
         </div>
         <div>
           <p>Contacto</p>
-          <a href="https://wa.link/jlpsyy" class="btn btn--outline" target="_blank" rel="noreferrer">
+          <a href="${socials.contacto}" class="btn btn--outline" target="_blank" rel="noreferrer">
             Escríbeme
           </a>
         </div>
@@ -142,7 +142,7 @@ export function renderFooter(site, about) {
 export function bindPlaceholderActions(root = document) {
   root.querySelectorAll('[data-action="contact-placeholder"]').forEach((btn) => {
     btn.addEventListener("click", () => {
-      alert("Botón placeholder: acá iría tu formulario de contacto real (mailto, WhatsApp, etc.).");
+      window.open("${socials.contacto}", "_blank");
     });
   });
 
