@@ -128,7 +128,8 @@ export function renderFooter(site, about) {
         </div>
         <div>
           <p>Contacto</p>
-          <button class="btn btn--outline" data-action="contact-placeholder">
+          <button class="btn btn--outline" data-action="https://wa.link/jlpsyy">
+          <button class="btn btn--outline" data-action="">
             Escríbeme
           </button>
         </div>
