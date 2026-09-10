@@ -128,10 +128,9 @@ export function renderFooter(site, about) {
         </div>
         <div>
           <p>Contacto</p>
-          <button class="btn btn--outline" data-action="https://wa.link/jlpsyy">
-          <button class="btn btn--outline" data-action="">
+          <a href="https://wa.link/jlpsyy" class="btn btn--outline" target="_blank" rel="noreferrer">
             Escríbeme
-          </button>
+          </a>
         </div>
       </div>
     </footer>
