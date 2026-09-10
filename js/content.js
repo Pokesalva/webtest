@@ -59,4 +59,5 @@ export const socials = {
   instagram: "https://instagram.com/tu_usuario",
   youtube: "https://youtube.com/@tu_canal",
   tiktok: "https://tiktok.com/@tu_usuario",
+  contacto: "https://wa.link/jlpsyy", // o "mailto:tu@correo.com"
 };
